@@ -169,7 +169,7 @@
     });
 
     musicToggle.addEventListener('click', ()=>{
-      if(!bgMusic.src) return alert('Sube assets/music.mp3 si quieres música de fondo');
+      if(!bgMusic.src) return alert('music.mp4 si quieres música de fondo');
       if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
       else{ bgMusic.pause(); musicToggle.textContent='Reproducir música' }
     });
