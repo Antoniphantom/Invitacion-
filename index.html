@@ -182,7 +182,7 @@
     <div class="right">
       <div class="stitch-wrap">
         <!-- Put a file named assets/stitch.png in the same repo, or change src to an online image you own the rights to -->
-        <img src="assets/stitch.png" alt="Stitch" class="stitch" onerror="this.style.display='none'">
+        <img src="stitch.png" alt="Stitch" class="stitch" onerror="this.style.display='none'">
         <div id="stitchFallback" style="display:none;font-size:110px;">🐙</div>
       </div>
     </div>
@@ -238,7 +238,7 @@
 
     confirmSend.addEventListener('click', ()=>{
       // Pre-filled message
-      const text = `Hola! Soy %5BNOMBRE%5D y confirmo asistencia al Cumplea\u00f1os de ${CONFIG.name} el 22 de noviembre a las 3:00pm.`;
+      const text = `Hola! Confirmo mi asistencia para el 22 de noviembre a las 3:00pm.`;
       // Open WhatsApp (web or app): use wa.me link
       const wa = `https://wa.me/${CONFIG.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`;
       window.open(wa, '_blank');
