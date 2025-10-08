@@ -2,92 +2,132 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Cumpleaños de Emma — Invitación</title>
   <style>
     :root{
-      --bg1:#74caff;
-      --bg2:#b6e8ff;
-      --card:#ffffffcc;
-      --accent:#005bb5;
-      --btn:#00aaff;
-      --glass: rgba(255,255,255,0.85);
+      --bg1:#74caff; --bg2:#b6e8ff; --card-bg: rgba(255,255,255,0.96);
+      --accent:#004b8a; --btn:#00aaff; --cursor-color: rgba(102,204,255,0.95);
     }
-    *{box-sizing:border-box;}
-    html,body{height:100%;scroll-behavior:smooth;}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;}
     body{
-      margin:0;
-      font-family:'Poppins',system-ui,'Segoe UI',sans-serif;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      display:flex;align-items:center;justify-content:center;padding:32px;
-      overflow-y:auto;position:relative;cursor:none;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      overflow-y:auto; padding:24px; display:flex; align-items:center; justify-content:center;
     }
-    .card{width:100%;max-width:960px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.82));border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,0.18);overflow:hidden;display:grid;grid-template-columns:1fr 420px;position:relative;z-index:1;margin:20px auto;}
-    .left{padding:36px 42px;}
-    h1{margin:0 0 8px;font-size:36px;color:var(--accent)}
-    .subtitle{margin:0 0 18px;color:#0b527a;font-weight:600}
-    .message{color:#134b6b;line-height:1.5;margin-bottom:18px}
-    .info{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-    .pill{background:var(--glass);padding:10px 14px;border-radius:12px;min-width:140px;font-weight:600;color:#083852;}
-    .actions{margin-top:16px;display:flex;gap:12px;flex-wrap:wrap}
-    .btn{background:var(--btn);color:white;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;border:0;cursor:pointer;box-shadow:0 6px 18px rgba(0,128,255,0.18)}
-    .btn.secondary{background:transparent;color:var(--accent);border:2px solid rgba(0,91,181,0.12)}
-    .right{background:linear-gradient(180deg,rgba(0,170,255,0.08),rgba(0,150,220,0.06));padding:18px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-    .stitch-wrap{width:360px;height:360px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,0.85),rgba(255,255,255,0.55));box-shadow:inset 0 -6px 30px rgba(0,0,0,0.05);}
-    .stitch{width:340px;height:340px;object-fit:contain;animation:float 4s ease-in-out infinite;filter:drop-shadow(0 10px 30px rgba(0,0,0,0.18));}
+
+    /* floating-balloon layer covers whole viewport but sits behind content */
+    .balloon-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .balloon{position:absolute;width:48px;height:64px;border-radius:50% 50% 45% 45%;box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+
+    /* subtle horizontal sway to look natural */
+    @keyframes riseY{0%{transform:translateY(110vh) translateX(0) rotate(0deg)}100%{transform:translateY(-120vh) translateX(0) rotate(360deg)}}
+    @keyframes sway{0%{transform:translateX(-12px)}50%{transform:translateX(12px)}100%{transform:translateX(-12px)}}
+
+    /* main card */
+    .card{position:relative;z-index:10;width:100%;max-width:980px;background:var(--card-bg);border-radius:18px;box-shadow:0 18px 50px rgba(9,30,63,0.18);overflow:hidden;display:grid;grid-template-columns:1fr 460px;align-items:stretch;gap:0;padding:0;transform-origin:center;animation:pageIn 700ms cubic-bezier(.2,.9,.3,1)}
+    @keyframes pageIn{from{opacity:0;transform:translateY(14px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+    .left{padding:36px 40px}
+    h1{margin:0 0 6px;font-size:34px;color:var(--accent);letter-spacing:-0.3px}
+    .subtitle{margin:0 0 14px;color:#0f5472;font-weight:600}
+    .message{color:#174f64;line-height:1.45;margin-bottom:14px}
+    .info{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    .pill{background:rgba(255,255,255,0.86);padding:10px 14px;border-radius:12px;font-weight:700;color:#053852;border:1px solid rgba(2,56,84,0.03)}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .btn{background:var(--btn);color:#fff;padding:12px 18px;border-radius:10px;border:0;font-weight:800;cursor:pointer;box-shadow:0 8px 26px rgba(0,160,255,0.16)}
+    .btn.secondary{background:transparent;color:var(--accent);border:2px solid rgba(0,75,138,0.08)}
+    .footer-note{font-size:13px;color:#0d5e7b;margin-top:14px}
+
+    /* right panel with stitch GIF */
+    .right{display:flex;align-items:center;justify-content:center;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));position:relative}
+    .stitch-wrap{width:92%;max-width:420px;height:auto;border-radius:16px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(255,255,255,0.7));padding:12px;box-shadow:inset 0 -6px 30px rgba(0,0,0,0.04);}
+    .stitch{width:100%;height:auto;max-width:360px;max-height:70vh;object-fit:contain;animation:float 4s ease-in-out infinite 200ms;opacity:0;transform:translateY(10px) scale(.98);animation-name:float,fadeBounce;animation-duration:4s,700ms;animation-timing-function:ease-in-out,cubic-bezier(.2,.9,.3,1);animation-iteration-count:infinite,1;animation-fill-mode:both}
     @keyframes float{0%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}100%{transform:translateY(0) rotate(-2deg)}}
-    .balloon{position:absolute;width:45px;height:60px;border-radius:50% 50% 45% 45%;background:var(--c);animation:rise 12s linear infinite;opacity:0.9;filter:brightness(1.1) saturate(1.2);}
-    @keyframes rise{0%{transform:translateY(120%)}100%{transform:translateY(-150%)}}
-    .footer-note{font-size:13px;color:#12607f;margin-top:18px}
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:60;}
+    @keyframes fadeBounce{0%{opacity:0;transform:translateY(20px) scale(.95)}60%{opacity:1;transform:translateY(-6px) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+    /* countdown */
+    .countdown{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .unit{background:rgba(0,91,181,0.07);padding:8px 10px;border-radius:8px;font-weight:800;color:#053f55}
+
+    /* modal RSVP */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(0,0,0,0.36),rgba(0,0,0,0.36));z-index:60}
     .modal.show{display:flex}
-    .modal-card{background:white;padding:22px;border-radius:12px;max-width:420px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,0.22)}
+    .modal-card{background:#fff;padding:18px;border-radius:12px;width:92%;max-width:420px;box-shadow:0 18px 40px rgba(0,0,0,0.25)}
     .modal-card h3{margin:0 0 8px}
-    .modal-actions{display:flex;gap:10px;margin-top:14px}
-    input,select{width:100%;padding:8px 10px;margin-top:6px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;}
-    .countdown{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-    .unit{background:rgba(0,91,181,0.07);padding:8px 10px;border-radius:8px;font-weight:700;color:#034862}
-    @media(max-width:900px){body{padding:16px;} .card{grid-template-columns:1fr;}.right{order:-1;padding-top:24px}.stitch-wrap{width:300px;height:300px}.stitch{width:280px;height:280px}}
-    #cursor{position:fixed;top:0;left:0;width:24px;height:24px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0) 70%);mix-blend-mode:screen;transform:translate(-50%,-50%);z-index:999;animation:pulse 1.5s infinite ease-in-out;}
-    @keyframes pulse{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}100%{transform:translate(-50%,-50%) scale(1)}}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #d6d6d6;margin-top:8px}
+
+    /* custom cursor */
+    #cursor{position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 30%, rgba(102,204,255,0.95) 60%, rgba(102,204,255,0.7) 100%);box-shadow:0 0 18px 6px rgba(102,204,255,0.15);transform:translate(-50%,-50%);mix-blend-mode:screen;animation:cursorPulse 1.6s infinite}
+    @keyframes cursorPulse{0%{transform:translate(-50%,-50%) scale(0.9)}50%{transform:translate(-50%,-50%) scale(1.25)}100%{transform:translate(-50%,-50%) scale(0.9)}}
+
+    /* responsive adjustments */
+    @media (max-width:920px){
+      .card{grid-template-columns:1fr;max-width:720px}
+      .right{padding:20px}
+      .stitch-wrap{max-width:320px}
+    }
+    @media (max-width:520px){
+      body{padding:14px}
+      .left{padding:20px}
+      h1{font-size:28px}
+      .stitch-wrap{max-width:280px}
+      #cursor{width:38px;height:38px}
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="left">
-      <h1>¡Emma cumple 7 años! 💙</h1>
-      <p class="subtitle">Te quiere invitar a su fiesta de cumpleaños </strong></p>
-      <p class="message">Ven a celebrarlos.</strong>Con una tarde llena de juegos, pastel y muchas sorpresas. ¡No olvides tus ganas de divertirte!</p>
-      <div class="info"><div class="pill">📅 22 de noviembre</div><div class="pill">⏰ 3:00 PM</div><div class="pill">📍 Salón de Fiestas Crayola</div></div>
-      <div class="countdown" id="countdown"></div>
+
+  <!-- Balloon background layer (generated by JS) -->
+  <div class="balloon-layer" aria-hidden="true"></div>
+
+  <main class="card" role="main" aria-labelledby="title">
+    <section class="left">
+      <h1 id="title">¡Emma cumple 7 años! 💙</h1>
+      <p class="subtitle">Te quiere invitar a su fiesta de cumpleaños</strong></p>
+      <p class="message">Ven a celebrarlos, </strong> con una tarde llena de muchas sorpresas.¡No olvides tus ganas de divertirte!</p>
+
+      <div class="info" aria-hidden>
+        <div class="pill">📅 22 de noviembre</div>
+        <div class="pill">⏰ 3:00 PM</div>
+        <div class="pill">📍 Salón de Fiestas Crayola</div>
+      </div>
+
+      <div class="countdown" id="countdown" aria-live="polite"></div>
+
       <div class="actions">
         <button class="btn" id="rsvpBtn">Confirmar asistencia</button>
-        <a class="btn secondary" id="mapBtn" href="#">Ver ubicación</a>
+        <a class="btn secondary" id="mapBtn" href="#" target="_blank" rel="noopener">Ver ubicación</a>
         <button class="btn secondary" id="musicToggle">Reproducir / Pausar música</button>
       </div>
+
       <p class="footer-note">Dirección: Calle Eucalipto 4, casi esquina Blvd. Euquerio Guerrero, 36257 Guanajuato Centro, México</p>
-    </div>
-    <div class="right">
+    </section>
+
+    <aside class="right" aria-hidden="true">
       <div class="stitch-wrap">
+        <!-- Asegúrate de subir assets/stitch-dance.gif en tu repo -->
         <img src="stitch.gif" alt="Stitch bailando" class="stitch" onerror="this.style.display='none'">
       </div>
-    </div>
-  </div>
+    </aside>
+  </main>
 
-  <div class="modal" id="rsvpModal">
+  <!-- RSVP Modal -->
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
     <div class="modal-card">
-      <h3>Confirmar asistencia</h3>
-      <label>Tu nombre:</label>
-      <input type="text" id="guestName" placeholder="Escribe tu nombre" required>
-      <label>¿Cuántas personas asistirán?</label>
+      <h3 id="rsvpTitle">Confirmar asistencia</h3>
+      <label for="guestName">Tu nombre:</label>
+      <input id="guestName" placeholder="Escribe tu nombre (ej. Marco)" />
+      <label for="guestCount">¿Cuántas personas asistirán?</label>
       <select id="guestCount">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
-        <option value="5+">5 o más</option>
+        <option value="5">5</option>
       </select>
-      <div class="modal-actions">
+      <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end">
         <button class="btn" id="sendRSVP">Enviar confirmación</button>
         <button class="btn secondary" id="cancelSend">Cancelar</button>
       </div>
@@ -95,72 +135,107 @@
   </div>
 
   <audio id="bgMusic" loop><source src="assets/music.mp3" type="audio/mpeg"></audio>
-  <div id="cursor"></div>
+  <div id="cursor" aria-hidden="true"></div>
 
   <script>
-    const CONFIG={dateISO:'2025-11-22T15:00:00',mapsUrl:'https://www.google.com/maps/search/?api=1&query=Calle+Eucalipto+4+Guanajuato',whatsapp:'+524731017671'};
-    const rsvpBtn=document.getElementById('rsvpBtn');
-    const rsvpModal=document.getElementById('rsvpModal');
-    const sendRSVP=document.getElementById('sendRSVP');
-    const cancelSend=document.getElementById('cancelSend');
-    const mapBtn=document.getElementById('mapBtn');
-    const musicToggle=document.getElementById('musicToggle');
-    const bgMusic=document.getElementById('bgMusic');
-    const cursor=document.getElementById('cursor');
+    // ---------- Config ----------
+    const CONFIG = {
+      dateISO: '2025-11-22T15:00:00',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Calle+Eucalipto+4+Guanajuato',
+      whatsapp: '+524731017671'
+    };
 
-    mapBtn.href=CONFIG.mapsUrl;
-    rsvpBtn.onclick=()=>rsvpModal.classList.add('show');
-    cancelSend.onclick=()=>rsvpModal.classList.remove('show');
-    sendRSVP.onclick=()=>{
-      const name=document.getElementById('guestName').value.trim();
-      const count=document.getElementById('guestCount').value;
-      if(!name){alert('Por favor, escribe tu nombre');return;}
-      const text=`Hola, soy ${name} y confirmo asistencia al Cumpleaños de Emma. Seremos ${count} personas 🎈`;
-      const wa=`https://wa.me/${CONFIG.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`;
-      window.open(wa,'_blank');
+    // Basic UI hooks
+    const mapBtn = document.getElementById('mapBtn');
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    const rsvpModal = document.getElementById('rsvpModal');
+    const cancelSend = document.getElementById('cancelSend');
+    const sendRSVP = document.getElementById('sendRSVP');
+    const musicToggle = document.getElementById('musicToggle');
+    const bgMusic = document.getElementById('bgMusic');
+
+    mapBtn.href = CONFIG.mapsUrl;
+    rsvpBtn.addEventListener('click', ()=> rsvpModal.classList.add('show'));
+    cancelSend.addEventListener('click', ()=> rsvpModal.classList.remove('show'));
+
+    sendRSVP.addEventListener('click', ()=> {
+      const name = document.getElementById('guestName').value.trim();
+      const count = document.getElementById('guestCount').value;
+      if(!name){ alert('Por favor escribe tu nombre'); return }
+      const text = `Hola, soy ${name} y confirmo asistencia al Cumpleaños de Emma. Seremos ${count} personas 🎈`;
+      const waUrl = `https://wa.me/${CONFIG.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`;
+      window.open(waUrl, '_blank');
       rsvpModal.classList.remove('show');
-    };
+    });
 
-    musicToggle.onclick=()=>{
-      if(!bgMusic.src)return alert('Sube un archivo de música a assets/music.mp3');
-      if(bgMusic.paused){bgMusic.play();musicToggle.textContent='Pausar música';}else{bgMusic.pause();musicToggle.textContent='Reproducir música';}
-    };
+    musicToggle.addEventListener('click', ()=>{
+      if(!bgMusic.src) return alert('Sube assets/music.mp3 si quieres música de fondo');
+      if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
+      else{ bgMusic.pause(); musicToggle.textContent='Reproducir música' }
+    });
 
-    const countdownEl=document.getElementById('countdown');
+    // Countdown
+    const countdownEl = document.getElementById('countdown');
     function updateCountdown(){
-      const t=new Date(CONFIG.dateISO),n=new Date();let d=Math.max(0,t-n);
-      const days=Math.floor(d/864e5);d-=days*864e5;
-      const h=Math.floor(d/36e5);d-=h*36e5;
-      const m=Math.floor(d/6e4);d-=m*6e4;
-      const s=Math.floor(d/1e3);
-      countdownEl.innerHTML=`<div class='unit'>${days}d</div><div class='unit'>${h}h</div><div class='unit'>${m}m</div><div class='unit'>${s}s</div>`
+      const target = new Date(CONFIG.dateISO); const now = new Date(); let diff = Math.max(0, target - now);
+      const days = Math.floor(diff/86400000); diff -= days*86400000;
+      const hours = Math.floor(diff/3600000); diff -= hours*3600000;
+      const minutes = Math.floor(diff/60000); diff -= minutes*60000;
+      const seconds = Math.floor(diff/1000);
+      countdownEl.innerHTML = `<div class="unit">${days}d</div><div class="unit">${hours}h</div><div class="unit">${minutes}m</div><div class="unit">${seconds}s</div>`;
     }
-    setInterval(updateCountdown,1e3);updateCountdown();
+    updateCountdown(); setInterval(updateCountdown,1000);
 
-    // Globos de colores vivos
-    const colors=['#ff6f91','#ff9671','#ffc75f','#f9f871','#6ddccf','#6ecbff','#c77dff'];
-    const right=document.querySelector('.right');
-    for(let i=0;i<14;i++){
-      const b=document.createElement('div');
-      b.className='balloon';
-      b.style.setProperty('--c',colors[Math.floor(Math.random()*colors.length)]);
-      b.style.left=(10+Math.random()*80)+'%';
-      b.style.animationDelay=(Math.random()*10)+'s';
-      b.style.animationDuration=(7+Math.random()*6)+'s';
-      right.appendChild(b);
-    }
+    // Balloons: generate dynamic balloons across the viewport
+    const balloonLayer = document.querySelector('.balloon-layer');
+    const balloonColors = ['#ff6f91','#ff9671','#ffc75f','#f9f871','#6ddccf','#6ecbff','#c77dff'];
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
 
-    // Cursor luminoso
-    document.addEventListener('mousemove',e=>{
-      cursor.style.left=e.clientX+'px';
-      cursor.style.top=e.clientY+'px';
-    });
-    document.addEventListener('touchmove',e=>{
-      if(e.touches.length>0){
-        cursor.style.left=e.touches[0].clientX+'px';
-        cursor.style.top=e.touches[0].clientY+'px';
+    function spawnBalloons(n=18){
+      for(let i=0;i<n;i++){
+        const b = document.createElement('div');
+        b.className='balloon';
+        const color = balloonColors[Math.floor(Math.random()*balloonColors.length)];
+        b.style.background = `linear-gradient(180deg, ${color}, rgba(255,255,255,0.12))`;
+        // random horizontal start
+        const left = Math.random()*100; b.style.left = `${left}%`;
+        // random size
+        const scale = 0.8 + Math.random()*0.9; b.style.width = `${48*scale}px`; b.style.height = `${64*scale}px`;
+        // random duration and delay
+        const duration = 8 + Math.random()*10; const delay = Math.random()*6;
+        b.style.animation = `riseY ${duration}s linear ${delay}s infinite`; // vertical rise
+        // add small sway using transform oscillation (CSS separate via JS to avoid timing conflicts)
+        b.dataset.sway = (6 + Math.random()*22); b.dataset.phase = Math.random()*Math.PI*2;
+        balloonLayer.appendChild(b);
       }
-    });
+    }
+    spawnBalloons(20);
+
+    // apply sway using requestAnimationFrame for smooth motion
+    function animateSway(){
+      const time = performance.now()/1000;
+      document.querySelectorAll('.balloon').forEach((el, idx)=>{
+        const sway = Number(el.dataset.sway) || 12; const phase = Number(el.dataset.phase) || 0;
+        const x = Math.sin(time*0.6 + phase + idx)*sway; // px
+        el.style.transform = `translateX(${x}px)`;
+      });
+      requestAnimationFrame(animateSway);
+    }
+    animateSway();
+
+    // Custom cursor (follows touch/mouse); visible on mobile as well
+    const cursor = document.getElementById('cursor');
+    function moveCursor(x,y){ cursor.style.left = x+'px'; cursor.style.top = y+'px'; }
+    document.addEventListener('mousemove', e=> moveCursor(e.clientX, e.clientY));
+    document.addEventListener('touchmove', e=>{ if(e.touches && e.touches[0]) moveCursor(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+
+    // small accessibility: close modal on Esc
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') rsvpModal.classList.remove('show'); });
+
+    // If user opens on very small screens, ensure content can scroll and stitch GIF scales
+    window.addEventListener('resize', ()=>{/* no-op: CSS handles scaling */});
+
   </script>
 </body>
 </html>
