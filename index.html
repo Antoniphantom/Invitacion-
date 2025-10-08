@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cumpleaños de Emma — Invitación</title>
+  <style>
+    :root{
+      --bg1:#7ecbff; /* cielo */
+      --bg2:#b0f0ff;
+      --card:#ffffffcc;
+      --accent:#005bb5;
+      --btn:#00aaff;
+      --glass: rgba(255,255,255,0.85);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* card */
+    .card{
+      width:100%;
+      max-width:960px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.82));
+      border-radius:20px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.18);
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: 1fr 420px;
+    }
+
+    .left{
+      padding:36px 42px;
+      position:relative;
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:36px;
+      color:var(--accent);
+      letter-spacing: -0.5px;
+    }
+    .subtitle{
+      margin:0 0 18px 0;
+      color:#0b527a;
+      font-weight:600;
+    }
+    .message{
+      color:#134b6b;
+      line-height:1.5;
+      margin-bottom:18px;
+    }
+    .info{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .info .pill{
+      background:var(--glass);
+      padding:10px 14px;
+      border-radius:12px;
+      min-width:140px;
+      font-weight:600;
+      color:#083852;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.02);
+    }
+
+    .actions{
+      margin-top:16px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      background:var(--btn);
+      color:white;
+      padding:12px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:700;
+      border:0;
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,128,255,0.18);
+    }
+    .btn.secondary{
+      background:transparent;
+      color:var(--accent);
+      border:2px solid rgba(0,91,181,0.12);
+      font-weight:700;
+    }
+
+    /* right panel with Stitch image */
+    .right{
+      background: linear-gradient(180deg, rgba(0,170,255,0.06), rgba(0,150,220,0.04));
+      padding:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .stitch-wrap{
+      width:320px;
+      height:320px;
+      border-radius:22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.8), rgba(255,255,255,0.55));
+      box-shadow: inset 0 -6px 30px rgba(0,0,0,0.05);
+      transform-origin:center;
+    }
+    .stitch{
+      width:260px;
+      height:260px;
+      object-fit:contain;
+      animation: float 4s ease-in-out infinite;
+      filter:drop-shadow(0 10px 30px rgba(0,0,0,0.18));
+    }
+    @keyframes float{
+      0%{ transform: translateY(0) rotate(-2deg)}
+      50%{ transform: translateY(-14px) rotate(2deg)}
+      100%{ transform: translateY(0) rotate(-2deg)}
+    }
+
+    /* small extras */
+    .footer-note{font-size:13px;color:#12607f;margin-top:18px}
+
+    /* modal RSVP */
+    .modal{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);z-index:60;
+    }
+    .modal.show{display:flex}
+    .modal-card{background:white;padding:22px;border-radius:12px;max-width:420px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,0.22)}
+    .modal-card h3{margin:0 0 8px}
+    .modal-actions{display:flex;gap:10px;margin-top:14px}
+
+    /* countdown */
+    .countdown{display:flex;gap:10px;margin-top:12px}
+    .countdown .unit{background:rgba(0,91,181,0.07);padding:8px 10px;border-radius:8px;font-weight:700;color:#034862}
+
+    /* responsive */
+    @media (max-width:900px){
+      .card{grid-template-columns:1fr;}
+      .right{order:-1;padding-top:24px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <div class="left">
+      <h1>¡Ohana significa familia! 💙</h1>
+      <p class="subtitle">Estás invitado al Cumpleaños de <strong>Emma</strong></p>
+      <p class="message">Ven a celebrar los <strong>7 años</strong> de Emma con una tarde llena de juegos, pastel y muchas sorpresas. ¡No olvides tus ganas de bailar!</p>
+
+      <div class="info" aria-hidden>
+        <div class="pill">📅 22 de noviembre</div>
+        <div class="pill">⏰ 3:00 PM</div>
+        <div class="pill">📍 Salón de Fiestas Crayola</div>
+      </div>
+
+      <div class="countdown" aria-live="polite" id="countdown"></div>
+
+      <div class="actions">
+        <button class="btn" id="rsvpBtn">Confirmar asistencia (WhatsApp)</button>
+        <a class="btn secondary" id="mapBtn" href="#">Ver ubicación</a>
+        <button class="btn secondary" id="musicToggle">Reproducir / Pausar música</button>
+      </div>
+
+      <p class="footer-note">Dirección: Calle Eucalipto 4, casi esquina Blvd. Euquerio Guerrero, 36257 Guanajuato Centro, México</p>
+    </div>
+
+    <div class="right">
+      <div class="stitch-wrap">
+        <!-- Put a file named assets/stitch.png in the same repo, or change src to an online image you own the rights to -->
+        <img src="assets/stitch.png" alt="Stitch" class="stitch" onerror="this.style.display='none'">
+        <div id="stitchFallback" style="display:none;font-size:110px;">🐙</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP Modal -->
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="modal-card">
+      <h3 id="rsvpTitle">Confirmar asistencia</h3>
+      <p>Se abrirá WhatsApp para enviar el mensaje de confirmación. ¿Deseas continuar?</p>
+      <div class="modal-actions">
+        <button class="btn" id="confirmSend">Sí, enviar</button>
+        <button class="btn secondary" id="cancelSend">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio (place a file music.mp3 into /assets or change src) -->
+  <audio id="bgMusic" loop>
+    <source src="assets/music.mp3" type="audio/mpeg">
+    <!-- If you don't provide a music file this will be ignored -->
+  </audio>
+
+  <script>
+    // ---------- Configuration (edítalo si lo necesitas) ----------
+    const CONFIG = {
+      name: 'Emma',
+      age: 7,
+      dateISO: '2025-11-22T15:00:00', // YYYY-MM-DDTHH:MM:SS (24h) — ajusta si tu zona horaria requiere
+      locationName: 'Salón de Fiestas Crayola',
+      address: 'Calle Eucalipto 4, casi esquina Blvd. Euquerio Guerrero, 36257 Guanajuato Centro, México',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Calle+Eucalipto+4+Guanajuato',
+      whatsapp: '+524731017671', // número con código de país (+52 México)
+    };
+
+    // ---------- helpers ----------
+    function show(el){el.classList.add('show')}
+    function hide(el){el.classList.remove('show')}
+
+    // Modal handling
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    const rsvpModal = document.getElementById('rsvpModal');
+    const confirmSend = document.getElementById('confirmSend');
+    const cancelSend = document.getElementById('cancelSend');
+    const mapBtn = document.getElementById('mapBtn');
+    const musicToggle = document.getElementById('musicToggle');
+    const bgMusic = document.getElementById('bgMusic');
+
+    mapBtn.setAttribute('href', CONFIG.mapsUrl);
+
+    rsvpBtn.addEventListener('click', ()=> show(rsvpModal));
+    cancelSend.addEventListener('click', ()=> hide(rsvpModal));
+
+    confirmSend.addEventListener('click', ()=>{
+      // Pre-filled message
+      const text = `Hola! Soy %5BNOMBRE%5D y confirmo asistencia al Cumplea\u00f1os de ${CONFIG.name} el 22 de noviembre a las 3:00pm.`;
+      // Open WhatsApp (web or app): use wa.me link
+      const wa = `https://wa.me/${CONFIG.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`;
+      window.open(wa, '_blank');
+      hide(rsvpModal);
+    });
+
+    musicToggle.addEventListener('click', ()=>{
+      if(!bgMusic.src) { alert('No hay archivo de música en assets/music.mp3. Si quieres música, sube tu archivo o edita el HTML.'); return }
+      if(bgMusic.paused) { bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
+      else { bgMusic.pause(); musicToggle.textContent='Reproducir música' }
+    });
+
+    // Countdown
+    const countdownEl = document.getElementById('countdown');
+    function updateCountdown(){
+      const target = new Date(CONFIG.dateISO);
+      const now = new Date();
+      let diff = Math.max(0, target - now);
+      const days = Math.floor(diff / (1000*60*60*24));
+      diff -= days*(1000*60*60*24);
+      const hours = Math.floor(diff/(1000*60*60));
+      diff -= hours*(1000*60*60);
+      const minutes = Math.floor(diff/(1000*60));
+      diff -= minutes*(1000*60);
+      const seconds = Math.floor(diff/1000);
+      countdownEl.innerHTML = `
+        <div class="unit">${days}d</div>
+        <div class="unit">${hours}h</div>
+        <div class="unit">${minutes}m</div>
+        <div class="unit">${seconds}s</div>`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+
+    // Fallback if stitch image not present
+    const stitchImg = document.querySelector('.stitch');
+    stitchImg.addEventListener('error', ()=>{
+      document.getElementById('stitchFallback').style.display='block';
+    });
+
+    // small confetti on load (simple)
+    function burstConfetti(){
+      const n=40;
+      for(let i=0;i<n;i++){
+        const el=document.createElement('div');
+        el.style.position='fixed';
+        el.style.left=(50+Math.random()*200-100)+'%';
+        el.style.top=(20+Math.random()*60)+'%';
+        el.style.width='8px'; el.style.height='12px';
+        el.style.borderRadius='2px';
+        el.style.opacity='0.95';
+        el.style.transform=`translate(-50%,-50%) rotate(${Math.random()*360}deg)`;
+        el.style.background=`hsl(${Math.random()*360} 70% 60%)`;
+        el.style.zIndex=9999;
+        document.body.appendChild(el);
+        setTimeout(()=>{ el.style.transition='transform 1200ms cubic-bezier(.17,.67,.22,1), opacity 1400ms'; el.style.transform=`translate(${(Math.random()*800-400)}px,${600+Math.random()*300}px) rotate(${Math.random()*540}deg)`; el.style.opacity='0' },20);
+        setTimeout(()=>el.remove(),1700);
+      }
+    }
+    // run a small confetti burst when page loads
+    window.addEventListener('load', ()=>{ setTimeout(burstConfetti,400) });
+
+    // try autoplay (may be blocked by browsers). Start paused state label
+    if(bgMusic.src){ musicToggle.textContent = 'Reproducir / Pausar música' }
+
+  </script>
+
+  <!-- ---------------- NOTES FOR YOU (no editar si no quieres) ----------------
+    • Coloca en la carpeta "assets" dentro del repo los archivos:
+       - stitch.png  (imagen de Stitch que tengas derecho a usar)
+       - music.mp3   (opcional: canción alegre/hawaiana)
+    • Sube este archivo como `index.html` a un repo en GitHub y activa GitHub Pages (branch main / root)
+    • El botón "Confirmar asistencia" abre WhatsApp con un mensaje prellenado. El usuario debe reemplazar [NOMBRE] antes de enviar.
+    • Si quieres que el mensaje incluya el nombre automáticamente (si hay formulario), puedo añadirlo.
+  ------------------------------------------------------------------------------>
+</body>
+</html>
