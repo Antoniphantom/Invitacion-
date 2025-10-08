@@ -168,10 +168,10 @@
       rsvpModal.classList.remove('show');
     });
 
-    music.mp3.addEventListener('click', ()=>{
+    music.addEventListener('click', ()=>{
       if(!bgMusic.src) return alert('music.mp3 si quieres música de fondo');
       if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
-      else{ bgMusic.pause(); music.mp3.textContent='Reproducir música' }
+      else{ bgMusic.pause(); music.textContent='Reproducir música' }
     });
 
     // Countdown
