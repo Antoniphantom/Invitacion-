@@ -135,7 +135,6 @@
     </div>
   </div>
 
-  <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
   <div id="cursor" aria-hidden="true"></div>
 
   <script>
@@ -259,12 +258,32 @@
   🔇
 </div>
 
+<!-- 🔊 Música de fondo -->
+<audio id="background-music" src="music.mp3" loop preload="auto"></audio>
+
+<!-- 🎵 Botón flotante -->
+<div id="music-control" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  font-size: 22px;
+">
+  🔇
+</div>
+
 <script>
   const audio = document.getElementById("background-music");
   const musicControl = document.getElementById("music-control");
   let isPlaying = false;
 
-  // Iniciar música tras primera interacción (click/touch)
+  // Iniciar música tras primer toque o clic
   const startMusic = () => {
     if (!isPlaying) {
       audio.play().then(() => {
@@ -279,9 +298,9 @@
   document.addEventListener("click", startMusic);
   document.addEventListener("touchstart", startMusic);
 
-  // Alternar play/pause al tocar el ícono
+  // Alternar play/pause con el ícono
   musicControl.addEventListener("click", (e) => {
-    e.stopPropagation(); // Evita conflicto con startMusic
+    e.stopPropagation();
     if (audio.paused) {
       audio.play().then(() => {
         musicControl.textContent = "🔊";
@@ -294,5 +313,6 @@
     }
   });
 </script>
+
 </body>
 </html>
