@@ -1,318 +1,244 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Cumpleaños de Emma — Invitación</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Cumpleaños de Emma!</title>
   <style>
-    :root{
-      --bg1:#74caff; --bg2:#b6e8ff; --card-bg: rgba(255,255,255,0.96);
-      --accent:#004b8a; --btn:#00aaff; --cursor-color: rgba(102,204,255,0.95);
-    }
-    *{box-sizing:border-box}
-    html,body{height:150%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;}
-    body{
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      overflow-y:auto; padding:24px; display:flex; align-items:center; justify-content:center;
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(180deg, #aee6ff, #ffffff);
+      overflow-x: hidden;
+      text-align: center;
     }
 
-    /* floating-balloon layer covers whole viewport but sits behind content */
-    .balloon-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-    .balloon{position:absolute;width:48px;height:64px;border-radius:50% 50% 45% 45%;box-shadow:0 6px 18px rgba(0,0,0,0.12);}
-
-    /* subtle horizontal sway to look natural */
-    @keyframes riseY{0%{transform:translateY(110vh) translateX(0) rotate(0deg)}100%{transform:translateY(-120vh) translateX(0) rotate(360deg)}}
-    @keyframes sway{0%{transform:translateX(-12px)}50%{transform:translateX(12px)}100%{transform:translateX(-12px)}}
-
-    /* main card */
-    .card{position:relative;z-index:10;width:100%;max-width:980px;background:var(--card-bg);border-radius:18px;box-shadow:0 18px 50px rgba(9,30,63,0.18);overflow:hidden;display:grid;grid-template-columns:1fr 460px;align-items:stretch;gap:0;padding:0;transform-origin:center;animation:pageIn 700ms cubic-bezier(.2,.9,.3,1)}
-    @keyframes pageIn{from{opacity:0;transform:translateY(14px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-    .left{padding:36px 40px}
-    h1{margin:0 0 6px;font-size:34px;color:var(--accent);letter-spacing:-0.3px}
-    .subtitle{margin:0 0 14px;color:#0f5472;font-weight:600}
-    .message{color:#174f64;line-height:1.45;margin-bottom:14px}
-    .info{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-    .pill{background:rgba(255,255,255,0.86);padding:10px 14px;border-radius:12px;font-weight:700;color:#053852;border:1px solid rgba(2,56,84,0.03)}
-    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
-    .btn{background:var(--btn);color:#fff;padding:12px 18px;border-radius:10px;border:0;font-weight:800;cursor:pointer;box-shadow:0 8px 26px rgba(0,160,255,0.16)}
-    .btn.secondary{background:transparent;color:var(--accent);border:2px solid rgba(0,75,138,0.08)}
-    .footer-note{font-size:13px;color:#0d5e7b;margin-top:14px}
-
-    /* right panel with stitch GIF */
-    .right{display:flex;align-items:center;justify-content:center;padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));position:relative}
-    .stitch-wrap{width:92%;max-width:420px;height:auto;border-radius:16px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.95), rgba(255,255,255,0.7));padding:12px;box-shadow:inset 0 -6px 30px rgba(0,0,0,0.04);}
-    .stitch{width:100%;height:auto;max-width:360px;max-height:70vh;object-fit:contain;animation:float 4s ease-in-out infinite 200ms;opacity:0;transform:translateY(10px) scale(.98);animation-name:float,fadeBounce;animation-duration:4s,700ms;animation-timing-function:ease-in-out,cubic-bezier(.2,.9,.3,1);animation-iteration-count:infinite,1;animation-fill-mode:both}
-    @keyframes float{0%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}100%{transform:translateY(0) rotate(-2deg)}}
-    @keyframes fadeBounce{0%{opacity:0;transform:translateY(20px) scale(.95)}60%{opacity:1;transform:translateY(-6px) scale(1.02)}100%{opacity:1;transform:translateY(0) scale(1)}}
-
-    /* countdown */
-    .countdown{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-    .unit{background:rgba(0,91,181,0.07);padding:8px 10px;border-radius:8px;font-weight:800;color:#053f55}
-
-    /* modal RSVP */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(0,0,0,0.36),rgba(0,0,0,0.36));z-index:60}
-    .modal.show{display:flex}
-    .modal-card{background:#fff;padding:18px;border-radius:12px;width:92%;max-width:420px;box-shadow:0 18px 40px rgba(0,0,0,0.25)}
-    .modal-card h3{margin:0 0 8px}
-    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #d6d6d6;margin-top:8px}
-
-    /* custom cursor */
-    #cursor{position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;pointer-events:none;z-index:9999;background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 30%, rgba(102,204,255,0.95) 60%, rgba(102,204,255,0.7) 100%);box-shadow:0 0 18px 6px rgba(102,204,255,0.15);transform:translate(-50%,-50%);mix-blend-mode:screen;animation:cursorPulse 1.6s infinite}
-    @keyframes cursorPulse{0%{transform:translate(-50%,-50%) scale(0.9)}50%{transform:translate(-50%,-50%) scale(1.25)}100%{transform:translate(-50%,-50%) scale(0.9)}}
-
-    /* responsive adjustments */
-    @media (max-width:920px){
-      .card{grid-template-columns:1fr;max-width:720px}
-      .right{padding:20px}
-      .stitch-wrap{max-width:320px}
+    h1 {
+      color: #0563af;
+      font-size: 2.5em;
+      margin-top: 20px;
+      text-shadow: 2px 2px 4px #fff;
     }
-    @media (max-width:520px){
-      body{padding:14px}
-      .left{padding:20px}
-      h1{font-size:28px}
-      .stitch-wrap{max-width:280px}
-      #cursor{width:38px;height:38px}
+
+    h2 {
+      color: #0c5192;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    .gif-container img {
+      width: 60%;
+      max-width: 400px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .info {
+      font-size: 1.2em;
+      color: #08457a;
+      margin: 10px auto;
+      width: 90%;
+    }
+
+    button {
+      background-color: #0d6efd;
+      color: white;
+      font-size: 1em;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #08457a;
+      transform: scale(1.05);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    input {
+      margin: 10px;
+      padding: 8px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+
+    /* Globos flotando */
+    .balloon {
+      position: absolute;
+      bottom: -150px;
+      width: 60px;
+      height: 80px;
+      background-color: #2196F3;
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-110vh); }
+    }
+
+    /* Música botón */
+    #music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      padding: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+      font-size: 22px;
+      transition: transform 0.3s ease;
+    }
+
+    #music-control.playing {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px #00b3ff; transform: scale(1); }
+      50% { box-shadow: 0 0 25px #00e1ff; transform: scale(1.1); }
+      100% { box-shadow: 0 0 10px #00b3ff; transform: scale(1); }
     }
   </style>
 </head>
 <body>
+  <h1>¡Cumpleaños de Emma! 🎉</h1>
+  <h2>¡Ven a celebrar los 7 años de nuestra pequeña!</h2>
 
-  <!-- Balloon background layer (generated by JS) -->
-  <div class="balloon-layer" aria-hidden="true"></div>
+  <div class="gif-container">
+    <img src="stitch-dance.gif" alt="Stitch celebrando">
+  </div>
 
-  <main class="card" role="main" aria-labelledby="title">
-    <section class="left">
-      <h1 id="title">¡Emma cumple 7 años! 💙</h1>
-      <p class="subtitle">Te quiere invitar a su fiesta de cumpleaños</strong></p>
-      <p class="message">Ven a celebrarlos, </strong> con una tarde llena de muchas sorpresas.</p>
-      <p class="message">¡No olvides tus ganas de divertirte!</p>
+  <div class="info">
+    <p>📅 <b>22 de Noviembre</b> — 3:00 PM</p>
+    <p>📍 <b>Salón de Fiestas Crayola</b></p>
+    <p>Calle Eucalipto 4, casi esquina con Blvd. Euquerio Guerrero<br>
+       36257 Guanajuato Centro, México</p>
+    <p>📞 <b>Confirmar al: 4731017671</b></p>
+  </div>
 
-      <div class="info" aria-hidden>
-        <div class="pill">📅 22 de noviembre</div>
-        <div class="pill">⏰ 3:00 PM</div>
-        <div class="pill">📍 Salón de Fiestas Crayola</div>
-      </div>
+  <button onclick="openModal()">Confirmar Asistencia</button>
 
-      <div class="countdown" id="countdown" aria-live="polite"></div>
-
-      <div class="actions">
-        <button class="btn" id="rsvpBtn">Confirmar asistencia</button>
-        <a class="btn secondary" id="mapBtn" href="#" target="_blank" rel="noopener">Ver ubicación</a>
-        <button class="btn secondary" id="musicToggle">Reproducir / Pausar música</button>
-      </div>
-
-      <p class="footer-note">Dirección: Calle Eucalipto 4, casi esquina Blvd. Euquerio Guerrero, 36257 Guanajuato Centro, México</p>
-    </section>
-
-    <aside class="right" aria-hidden="true">
-      <div class="stitch-wrap">
-        <!-- Asegúrate de subir stitch.gif en tu repo -->
-        <img src="stitch.gif" alt="Stitch bailando" class="stitch" onerror="this.style.display='none'">
-      </div>
-    </aside>
-  </main>
-
-  <!-- RSVP Modal -->
-  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
-    <div class="modal-card">
-      <h3 id="rsvpTitle">Confirmar asistencia</h3>
-      <label for="guestName">Tu nombre:</label>
-      <input id="guestName" placeholder="Escribe tu nombre (ej. Marco)" />
-      <label for="guestCount">¿Cuántas personas asistirán?</label>
-      <select id="guestCount">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-      </select>
-      <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end">
-        <button class="btn" id="sendRSVP">Enviar confirmación</button>
-        <button class="btn secondary" id="cancelSend">Cancelar</button>
-      </div>
+  <!-- Modal -->
+  <div class="modal" id="rsvpModal">
+    <div class="modal-content">
+      <h3>Confirmar Asistencia 🎈</h3>
+      <input type="text" id="nombre" placeholder="Tu nombre">
+      <input type="number" id="personas" placeholder="¿Cuántas personas asistirán?">
+      <button onclick="confirmarAsistencia()">Enviar</button>
     </div>
   </div>
 
-  <div id="cursor" aria-hidden="true"></div>
+  <!-- Globos -->
+  <div id="balloons"></div>
+
+  <!-- Música -->
+  <audio id="background-music" src="music.mp3" loop preload="auto"></audio>
+  <div id="music-control">🔇</div>
 
   <script>
-    // ---------- Config ----------
-    const CONFIG = {
-      dateISO: '2025-11-22T15:00:00',
-      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Calle+Eucalipto+4+Guanajuato',
-      whatsapp: '+524731017671'
+    // 🎈 Crear globos de colores
+    const colors = ['#00aaff', '#ff4081', '#ffd700', '#6a1b9a', '#ff5722', '#009688'];
+    for (let i = 0; i < 15; i++) {
+      const b = document.createElement('div');
+      b.classList.add('balloon');
+      b.style.left = Math.random() * 100 + 'vw';
+      b.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      b.style.animationDuration = (6 + Math.random() * 5) + 's';
+      document.getElementById('balloons').appendChild(b);
+    }
+
+    // 🎵 Control música
+    const audio = document.getElementById("background-music");
+    const musicControl = document.getElementById("music-control");
+    let isPlaying = false;
+
+    const startMusic = () => {
+      if (!isPlaying) {
+        audio.play().then(() => {
+          isPlaying = true;
+          musicControl.textContent = "🔊";
+          musicControl.classList.add("playing");
+        }).catch(err => console.log("Bloqueado por navegador:", err));
+      }
+      document.removeEventListener("click", startMusic);
+      document.removeEventListener("touchstart", startMusic);
     };
 
-    // Basic UI hooks
-    const mapBtn = document.getElementById('mapBtn');
-    const rsvpBtn = document.getElementById('rsvpBtn');
-    const rsvpModal = document.getElementById('rsvpModal');
-    const cancelSend = document.getElementById('cancelSend');
-    const sendRSVP = document.getElementById('sendRSVP');
-    const musicToggle = document.getElementById('musicToggle');
-    const bgMusic = document.getElementById('bgMusic');
+    document.addEventListener("click", startMusic);
+    document.addEventListener("touchstart", startMusic);
 
-    mapBtn.href = CONFIG.mapsUrl;
-    rsvpBtn.addEventListener('click', ()=> rsvpModal.classList.add('show'));
-    cancelSend.addEventListener('click', ()=> rsvpModal.classList.remove('show'));
-
-    sendRSVP.addEventListener('click', ()=> {
-      const name = document.getElementById('guestName').value.trim();
-      const count = document.getElementById('guestCount').value;
-      if(!name){ alert('Por favor escribe tu nombre'); return }
-      const text = `Hola, soy ${name} y confirmo asistencia al Cumpleaños de Emma. Seremos ${count} personas 🎈`;
-      const waUrl = `https://wa.me/${CONFIG.whatsapp.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(text)}`;
-      window.open(waUrl, '_blank');
-      rsvpModal.classList.remove('show');
+    musicControl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (audio.paused) {
+        audio.play().then(() => {
+          musicControl.textContent = "🔊";
+          musicControl.classList.add("playing");
+          isPlaying = true;
+        });
+      } else {
+        audio.pause();
+        musicControl.textContent = "🔇";
+        musicControl.classList.remove("playing");
+        isPlaying = false;
+      }
     });
 
-    musicToggle.addEventListener('click', ()=>{
-      if(!bgMusic.src) return alert('Sube music.mp3 si quieres música de fondo');
-      if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
-      else{ bgMusic.pause(); musicToggle.textContent='Reproducir música' }
-    });
+    // 📝 Modal
+    const modal = document.getElementById("rsvpModal");
 
-    // Countdown
-    const countdownEl = document.getElementById('countdown');
-    function updateCountdown(){
-      const target = new Date(CONFIG.dateISO); const now = new Date(); let diff = Math.max(0, target - now);
-      const days = Math.floor(diff/86400000); diff -= days*86400000;
-      const hours = Math.floor(diff/3600000); diff -= hours*3600000;
-      const minutes = Math.floor(diff/60000); diff -= minutes*60000;
-      const seconds = Math.floor(diff/1000);
-      countdownEl.innerHTML = `<div class="unit">${days}d</div><div class="unit">${hours}h</div><div class="unit">${minutes}m</div><div class="unit">${seconds}s</div>`;
+    function openModal() {
+      modal.style.display = "flex";
     }
-    updateCountdown(); setInterval(updateCountdown,1000);
 
-    // Balloons: generate dynamic balloons across the viewport
-    const balloonLayer = document.querySelector('.balloon-layer');
-    const balloonColors = ['#ff6f91','#ff9671','#ffc75f','#f9f871','#6ddccf','#6ecbff','#c77dff'];
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-
-    function spawnBalloons(n=18){
-      for(let i=0;i<n;i++){
-        const b = document.createElement('div');
-        b.className='balloon';
-        const color = balloonColors[Math.floor(Math.random()*balloonColors.length)];
-        b.style.background = `linear-gradient(180deg, ${color}, rgba(255,255,255,0.12))`;
-        // random horizontal start
-        const left = Math.random()*100; b.style.left = `${left}%`;
-        // random size
-        const scale = 0.8 + Math.random()*0.9; b.style.width = `${48*scale}px`; b.style.height = `${64*scale}px`;
-        // random duration and delay
-        const duration = 8 + Math.random()*10; const delay = Math.random()*6;
-        b.style.animation = `riseY ${duration}s linear ${delay}s infinite`; // vertical rise
-        // add small sway using transform oscillation (CSS separate via JS to avoid timing conflicts)
-        b.dataset.sway = (6 + Math.random()*22); b.dataset.phase = Math.random()*Math.PI*2;
-        balloonLayer.appendChild(b);
+    function confirmarAsistencia() {
+      const nombre = document.getElementById("nombre").value;
+      const personas = document.getElementById("personas").value;
+      if (nombre && personas) {
+        alert(`¡Gracias ${nombre}! Confirmaste asistencia para ${personas} persona(s). 💙`);
+        modal.style.display = "none";
+      } else {
+        alert("Por favor completa todos los campos.");
       }
     }
-    spawnBalloons(20);
 
-    // apply sway using requestAnimationFrame for smooth motion
-    function animateSway(){
-      const time = performance.now()/1000;
-      document.querySelectorAll('.balloon').forEach((el, idx)=>{
-        const sway = Number(el.dataset.sway) || 12; const phase = Number(el.dataset.phase) || 0;
-        const x = Math.sin(time*0.6 + phase + idx)*sway; // px
-        el.style.transform = `translateX(${x}px)`;
-      });
-      requestAnimationFrame(animateSway);
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
     }
-    animateSway();
-
-    // Custom cursor (follows touch/mouse); visible on mobile as well
-    const cursor = document.getElementById('cursor');
-    function moveCursor(x,y){ cursor.style.left = x+'px'; cursor.style.top = y+'px'; }
-    document.addEventListener('mousemove', e=> moveCursor(e.clientX, e.clientY));
-    document.addEventListener('touchmove', e=>{ if(e.touches && e.touches[0]) moveCursor(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
-
-    // small accessibility: close modal on Esc
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape') rsvpModal.classList.remove('show'); });
-
-    // If user opens on very small screens, ensure content can scroll and stitch GIF scales
-    window.addEventListener('resize', ()=>{/* no-op: CSS handles scaling */});
-
   </script>
-
-<script>
-<!-- 🔊 Música de fondo -->
-<audio id="background-music" src="music.mp3" loop preload="auto"></audio>
-
-<!-- 🎵 Botón flotante -->
-<div id="music-control" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.7);
-  border-radius: 50%;
-  padding: 12px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  z-index: 9999;
-  backdrop-filter: blur(5px);
-">
-  🔇
-</div>
-
-<!-- 🔊 Música de fondo -->
-<audio id="background-music" src="music.mp3" loop preload="auto"></audio>
-
-<!-- 🎵 Botón flotante -->
-<div id="music-control" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 50%;
-  padding: 12px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  z-index: 9999;
-  backdrop-filter: blur(5px);
-  font-size: 22px;
-">
-  🔇
-</div>
-
-<script>
-  const audio = document.getElementById("background-music");
-  const musicControl = document.getElementById("music-control");
-  let isPlaying = false;
-
-  // Iniciar música tras primer toque o clic
-  const startMusic = () => {
-    if (!isPlaying) {
-      audio.play().then(() => {
-        isPlaying = true;
-        musicControl.textContent = "🔊";
-      }).catch(err => console.log("Bloqueado por navegador:", err));
-    }
-    document.removeEventListener("click", startMusic);
-    document.removeEventListener("touchstart", startMusic);
-  };
-
-  document.addEventListener("click", startMusic);
-  document.addEventListener("touchstart", startMusic);
-
-  // Alternar play/pause con el ícono
-  musicControl.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (audio.paused) {
-      audio.play().then(() => {
-        musicControl.textContent = "🔊";
-        isPlaying = true;
-      });
-    } else {
-      audio.pause();
-      musicControl.textContent = "🔇";
-      isPlaying = false;
-    }
-  });
-</script>
-
 </body>
 </html>
