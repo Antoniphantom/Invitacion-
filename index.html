@@ -10,7 +10,7 @@
       --accent:#004b8a; --btn:#00aaff; --cursor-color: rgba(102,204,255,0.95);
     }
     *{box-sizing:border-box}
-    html,body{height:150%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;}
+    html,body{height:100%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;}
     body{
       background: linear-gradient(135deg,var(--bg1),var(--bg2));
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
@@ -102,12 +102,12 @@
         <button class="btn secondary" id="musicToggle">Reproducir / Pausar música</button>
       </div>
 
-      <p class="footer-note">Dirección: Carr. Guanajuato - Juventino Rosas Km. 7, Frente a Chevrolet de Guanajuato, esquina almacén de la SEG, Col. Arroyo Verde, 36250 Guanajuato, Gto. México, 36251 Guanajuato, Gto.</p>
+      <p class="footer-note">Dirección: Calle Eucalipto 4, casi esquina Blvd. Euquerio Guerrero, 36257 Guanajuato Centro, México</p>
     </section>
 
     <aside class="right" aria-hidden="true">
       <div class="stitch-wrap">
-        <!-- Asegúrate de subir stitch.gif en tu repo -->
+        <!-- Asegúrate de subir assets/stitch-dance.gif en tu repo -->
         <img src="stitch.gif" alt="Stitch bailando" class="stitch" onerror="this.style.display='none'">
       </div>
     </aside>
@@ -134,7 +134,7 @@
     </div>
   </div>
 
-  <audio id="bgMusic.mp3" loop><source src="music.mp3" type="audio/mpeg"></audio>
+  <audio id="bgMusic" loop><source src="assets/music.mp3" type="audio/mpeg"></audio>
   <div id="cursor" aria-hidden="true"></div>
 
   <script>
@@ -168,10 +168,10 @@
       rsvpModal.classList.remove('show');
     });
 
-    music.addEventListener('click', ()=>{
-      if(!bgMusic.src) return alert('music.mp3 si quieres música de fondo');
+    musicToggle.addEventListener('click', ()=>{
+      if(!bgMusic.src) return alert('Sube assets/music.mp3 si quieres música de fondo');
       if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
-      else{ bgMusic.pause(); music.textContent='Reproducir música' }
+      else{ bgMusic.pause(); musicToggle.textContent='Reproducir música' }
     });
 
     // Countdown
@@ -237,5 +237,36 @@
     window.addEventListener('resize', ()=>{/* no-op: CSS handles scaling */});
 
   </script>
+
+<script>
+  // Selecciona el elemento de audio existente
+  const music = document.getElementById("background-music");
+
+  // Si no existe, lo creamos dinámicamente
+  if (!music) {
+    const audio = document.createElement("audio");
+    audio.id = "background-music";
+    audio.src = "music.mp3";
+    audio.loop = true;
+    audio.preload = "auto";
+    document.body.appendChild(audio);
+  }
+
+  // Reproducir al primer toque, clic o scroll
+  const startMusic = () => {
+    const bgMusic = document.getElementById("background-music");
+    if (bgMusic.paused) {
+      bgMusic.play().catch(err => console.log("Reproducción bloqueada:", err));
+    }
+    document.removeEventListener("touchstart", startMusic);
+    document.removeEventListener("click", startMusic);
+    document.removeEventListener("scroll", startMusic);
+  };
+
+  document.addEventListener("touchstart", startMusic);
+  document.addEventListener("click", startMusic);
+  document.addEventListener("scroll", startMusic);
+</script>
+
 </body>
 </html>
