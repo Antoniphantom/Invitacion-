@@ -108,7 +108,7 @@
 
     <aside class="right" aria-hidden="true">
       <div class="stitch-wrap">
-        <!-- Asegúrate de subir assets/stitch-dance.gif en tu repo -->
+        <!-- Asegúrate de subir stitch.gif en tu repo -->
         <img src="stitch.gif" alt="Stitch bailando" class="stitch" onerror="this.style.display='none'">
       </div>
     </aside>
@@ -135,7 +135,7 @@
     </div>
   </div>
 
-  <audio id="bgMusic" loop><source src="assets/music.mp3" type="audio/mpeg"></audio>
+  <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
   <div id="cursor" aria-hidden="true"></div>
 
   <script>
@@ -170,7 +170,7 @@
     });
 
     musicToggle.addEventListener('click', ()=>{
-      if(!bgMusic.src) return alert('Sube assets/music.mp3 si quieres música de fondo');
+      if(!bgMusic.src) return alert('Sube music.mp3 si quieres música de fondo');
       if(bgMusic.paused){ bgMusic.play().catch(()=>{}); musicToggle.textContent='Pausar música' }
       else{ bgMusic.pause(); musicToggle.textContent='Reproducir música' }
     });
