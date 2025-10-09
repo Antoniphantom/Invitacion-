@@ -240,34 +240,59 @@
   </script>
 
 <script>
-  // Selecciona el elemento de audio existente
-  const music = document.getElementById("background-music");
+<!-- 🔊 Música de fondo -->
+<audio id="background-music" src="music.mp3" loop preload="auto"></audio>
 
-  // Si no existe, lo creamos dinámicamente
-  if (!music) {
-    const audio = document.createElement("audio");
-    audio.id = "background-music";
-    audio.src = "music.mp3";
-    audio.loop = true;
-    audio.preload = "auto";
-    document.body.appendChild(audio);
-  }
+<!-- 🎵 Botón flotante -->
+<div id="music-control" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 50%;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+">
+  🔇
+</div>
 
-  // Reproducir al primer toque, clic o scroll
+<script>
+  const audio = document.getElementById("background-music");
+  const musicControl = document.getElementById("music-control");
+  let isPlaying = false;
+
+  // Iniciar música tras primera interacción (click/touch)
   const startMusic = () => {
-    const bgMusic = document.getElementById("background-music");
-    if (bgMusic.paused) {
-      bgMusic.play().catch(err => console.log("Reproducción bloqueada:", err));
+    if (!isPlaying) {
+      audio.play().then(() => {
+        isPlaying = true;
+        musicControl.textContent = "🔊";
+      }).catch(err => console.log("Bloqueado por navegador:", err));
     }
-    document.removeEventListener("touchstart", startMusic);
     document.removeEventListener("click", startMusic);
-    document.removeEventListener("scroll", startMusic);
+    document.removeEventListener("touchstart", startMusic);
   };
 
-  document.addEventListener("touchstart", startMusic);
   document.addEventListener("click", startMusic);
-  document.addEventListener("scroll", startMusic);
-</script>
+  document.addEventListener("touchstart", startMusic);
 
+  // Alternar play/pause al tocar el ícono
+  musicControl.addEventListener("click", (e) => {
+    e.stopPropagation(); // Evita conflicto con startMusic
+    if (audio.paused) {
+      audio.play().then(() => {
+        musicControl.textContent = "🔊";
+        isPlaying = true;
+      });
+    } else {
+      audio.pause();
+      musicControl.textContent = "🔇";
+      isPlaying = false;
+    }
+  });
+</script>
 </body>
 </html>
